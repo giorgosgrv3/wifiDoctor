@@ -11,6 +11,8 @@ def mhtsotakhGamiesai(roufianos1, roufianos2):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    rouf1 = input ("Dwse politiko apatewna: ")
-    rouf2 = input ("Dwse roufianoARD tou Skai: ")
-    mhtsotakhGamiesai(rouf1, rouf2)
+        rouf1 = input ("Dwse politiko apatewna: ")
+        rouf2 = input ("Dwse roufianoARD tou Skai: ")
+        mhtsotakhGamiesai(rouf1, rouf2)
+         
+        

@@ -90,12 +90,12 @@ def analyze_ap_signal_strength(pcap_file):
             # In 5 GHz: RSSI matters more (shorter range), overlap is less impactful
             w_ssid = 0.66  # Less airtime pressure in wider spectrum
             w_overlap = 0.16  # More available bandwidth, overlap is less damaging
-            if avg_rssi > -55:
-                w_rssi = 0.5
-            elif avg_rssi < -70:
-                w_rssi = 1.5
+            if avg_rssi > -60:
+                w_rssi = 0.5  # give bonus (less density points) to 5ghz for good connection
+            elif -75 < avg_rssi < -60:
+                w_rssi = 1.5  # penalize 5ghz more than 2.4ghz for unstable connection (somewhat bad rssi)
             else:
-                w_rssi = 1.0  # Signal strength matters more due to attenuation and short range
+                w_rssi = 2.0  # penalize 5ghz even more for bad rssi due to strong attenuation
             w_phy = 0.5  # Modern PHY (e.g., 802.11ax) performs significantly better in 5 GHz
             avg_rssi += 6  # +6dB compensation for shorter range compared to 2.4GHz
 
@@ -197,6 +197,9 @@ def visualizer(data):
     total_density_24ghz = 0
     total_density_5ghz = 0
 
+    counter_24 = 0
+    counter_5 = 0
+
     #arxika prepei na jexwrisoume ta kanalia kai na ta mazepsoume
 
     for bssid in data.keys():
@@ -204,17 +207,21 @@ def visualizer(data):
         if channel is not None:
             if channel <= 13:
                 total_density_24ghz += data[bssid]['density_score']
+                counter_24 +=1
             else:
                 total_density_5ghz += data[bssid]['density_score']
+                counter_5 +=1
 
+    avg_density_24 = total_density_24ghz / counter_24
+    avg_density_5 = total_density_5ghz / counter_5
 
     #jekiname to plotarisma
     labels = ["2.4 GHz", "5 GHz"]
-    density_scores = [total_density_24ghz, total_density_5ghz]
+    density_scores = [avg_density_24, avg_density_5]
     colors = ['crimson', 'royalblue']
     edge_colors = ['darkred', 'darkblue']
 
-    plt.figure(figsize=(12, 5))
+    plt.figure(figsize=(14, 8))
     bars = plt.bar(labels, density_scores, color=colors, edgecolor=edge_colors, width=0.6)
     plt.title("2.4GHz VS 5GHz", fontsize=16, fontweight="bold")
     plt.ylabel("Density Score", fontsize=14)
@@ -226,8 +233,8 @@ def visualizer(data):
     #bazoume apo panw to sunolo ths kathe bandas
     for bar in bars:
         height = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width() / 2, height + 2, f'{height:.1f}',
-                 ha='center', fontsize=12, fontweight='bold', color='black')
+        plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, f'{height:.1f}',
+                 ha='center', fontsize=10, fontweight='bold', color='black')
 
     plt.tight_layout()
     plt.show()
@@ -236,7 +243,9 @@ def visualizer(data):
 
 
 def main():
+
     pcap_file = "TUC.pcapng"
+    print(f"Reading {pcap_file}")
     data = analyze_ap_signal_strength(pcap_file)
     visualizer(data)
 

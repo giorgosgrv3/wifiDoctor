@@ -100,7 +100,7 @@ def analyze_ap_signal_strength(pcap_file):
 # to defaultdict ap_data einai gia kathe ena AP.
 # To defaultdict leitourgei etsi: An pame na valoume ena key pou DEN einai mesa, tote automata tha dimiourgisoume
 # mia nea kataxwrish, pou periexei ena SET ssids, ena LIST rssi_values, kai mia metavlith channel (krataei to channel pou ekpempei to AP)
-    ap_data = defaultdict(lambda: {'ssids': set(), 'rssi_values': [], 'channel' : None})
+    ap_data = defaultdict(lambda: {'ssids': set(), 'rssi_values': [], 'channel' : None, 'phy' : None})
 
 #To channel usage dictionary krataei ws key ena channel kai ws values tis BSSID olwn twn AP pou ekpempoun se auto
 # (einai gia na vroume meta posa AP kanoun overlap)

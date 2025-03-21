@@ -174,7 +174,7 @@ def visualizer(data):
 
 
 
-    #=====PLOT 4=======
+    #=====PLOT 3=======
     #gia na sygkrinoume tin pyknotita twn dyo channel
 
     total_density_24ghz = 0
@@ -195,8 +195,9 @@ def visualizer(data):
                 total_density_5ghz += data[bssid]['density_score']
                 counter_5 +=1
 
-    avg_density_24 = total_density_24ghz / counter_24
-    avg_density_5 = total_density_5ghz / counter_5
+    avg_density_24 = total_density_24ghz / counter_24 if counter_24 > 0 else 0
+    avg_density_5 = total_density_5ghz / counter_5 if counter_5 > 0 else 0
+
 
     #jekiname to plotarisma
     labels = ["2.4 GHz", "5 GHz"]
@@ -227,7 +228,7 @@ def visualizer(data):
 
 def main():
 
-    pcap_file = "random.pcapng"
+    pcap_file = "TUC.pcapng"
     print(f"Reading {pcap_file}")
     data = analyze_ap_signal_strength(pcap_file)
     visualizer(data)

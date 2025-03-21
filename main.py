@@ -227,7 +227,7 @@ def visualizer(data):
 
 def main():
 
-    pcap_file = "TUC.pcapng"
+    pcap_file = "random.pcapng"
     print(f"Reading {pcap_file}")
     data = analyze_ap_signal_strength(pcap_file)
     visualizer(data)

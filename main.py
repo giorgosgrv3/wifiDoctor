@@ -165,31 +165,14 @@ def visualizer(data):
     plt.figure(figsize=(14, 6))
     plt.hist(avg_rssis, bins=100, color='b', alpha=0.6)
     plt.title("RSSI", fontsize=14, fontweight="bold")
-    plt.ylabel("APs", fontsize=12)
+    plt.ylabel("number of APs", fontsize=12)
     plt.xlabel("Average RSSI (dBm)", fontsize=12)
     plt.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
     plt.grid(axis='y', linestyle='--', alpha=0.6)
     plt.show()
 
-    '''
-    # ======PLOT 3===========
-    #na doume posa ssids exei to kathe ap
 
-    #ta sortaroume me basi to plithos kai ta penrame se dyo metablites opws prin (tufla na exei o giatrakos, i to chat)
-    sorted_ssid_data = sorted(zip(bssids, ssid_counts), key=lambda x: x[1], reverse=True)
-    sorted_bssids_ssid, sorted_ssid_counts = zip(*sorted_ssid_data)
-
-    plt.figure(figsize=(14, 6))
-    plt.bar(sorted_bssids_ssid, sorted_ssid_counts, color='orange', width=0.6)
-    plt.title("Πλήθος SSIDs ανά AP", fontsize=14, fontweight="bold")
-    plt.ylabel("Αριθμός SSIDs", fontsize=12)
-    plt.xlabel("BSSID", fontsize=12)
-    plt.xticks(rotation=45, fontsize=6)
-    plt.grid(axis='y', linestyle='--', alpha=0.6)
-    plt.tight_layout()
-    plt.show()
-    '''
 
     #=====PLOT 4=======
     #gia na sygkrinoume tin pyknotita twn dyo channel
@@ -223,7 +206,7 @@ def visualizer(data):
 
     plt.figure(figsize=(14, 8))
     bars = plt.bar(labels, density_scores, color=colors, edgecolor=edge_colors, width=0.6)
-    plt.title("2.4GHz VS 5GHz", fontsize=16, fontweight="bold")
+    plt.title("Average Density Score: 2.4GHz VS 5GHz", fontsize=16, fontweight="bold")
     plt.ylabel("Density Score", fontsize=14)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)

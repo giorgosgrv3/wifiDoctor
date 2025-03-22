@@ -11,7 +11,7 @@ from collections import defaultdict
 #pd.set_option("display.expand_frame_repr", False)
 
 
-'''======================================================PCAP PARSER========================================================================'''
+'''======================================================PCAP PARSER - ANALYZER========================================================================'''
 
 def hex_ssid_to_string(hex_ssid):
     hex_str = hex_ssid.replace(":", "")

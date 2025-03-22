@@ -117,12 +117,16 @@ def analyze_ap_signal_strength(pcap_file):
               f"| Avg RSSI: {avg_rssi:.2f} dBm"
               f"| Channel: {channel}"
               f"| Overlapping APs: {overlap_count} "
-              f"| Phy Type: {  phy} "
+              f"| Phy Type: {phy} "
               f"| Density : {density_score:.2f}")
 
     return summarized_ap_data
 
-def visualizer(data):
+'''========================================================================================================================================'''
+
+
+'''======================================================Visualizer========================================================================'''
+def visualizer(data, netname):
 
     bssids = list(data.keys())
     density_scores = []
@@ -151,7 +155,7 @@ def visualizer(data):
 
     plt.figure(figsize=(14, 6))
     plt.bar(sorted_bssids, sorted_density_scores, color='b', align='edge', width=0.6)
-    plt.title("Density Score", fontsize=14, fontweight="bold")
+    plt.title(f"Density Score Of {netname}", fontsize=14, fontweight="bold")
     plt.ylabel("Density Score", fontsize=12)
     plt.xlabel("BSSID",fontsize=12)
     plt.xticks(rotation=45, fontsize=6)
@@ -164,7 +168,7 @@ def visualizer(data):
     #kanoume gia na doume posa aps einai isxyra se syma kai posa astheni
     plt.figure(figsize=(14, 6))
     plt.hist(avg_rssis, bins=100, color='b', alpha=0.6)
-    plt.title("RSSI", fontsize=14, fontweight="bold")
+    plt.title(f"RSSI Of {netname}", fontsize=14, fontweight="bold")
     plt.ylabel("number of APs", fontsize=12)
     plt.xlabel("Average RSSI (dBm)", fontsize=12)
     plt.grid(axis='y', linestyle='--', alpha=0.6)
@@ -172,31 +176,11 @@ def visualizer(data):
     plt.grid(axis='y', linestyle='--', alpha=0.6)
     plt.show()
 
+    #======PLOT 3===========
+    #kanoume gia na doume mia banda einai pio pykni (meso oro)
 
-
-    #=====PLOT 3=======
-    #gia na sygkrinoume tin pyknotita twn dyo channel
-
-    total_density_24ghz = 0
-    total_density_5ghz = 0
-
-    counter_24 = 0
-    counter_5 = 0
-
-    #arxika prepei na jexwrisoume ta kanalia kai na ta mazepsoume
-
-    for bssid in data.keys():
-        channel = data[bssid].get("channel")  # Αν δεν υπάρχει το channel, επιστρέφει None
-        if channel is not None:
-            if channel <= 13:
-                total_density_24ghz += data[bssid]['density_score']
-                counter_24 +=1
-            else:
-                total_density_5ghz += data[bssid]['density_score']
-                counter_5 +=1
-
-    avg_density_24 = total_density_24ghz / counter_24 if counter_24 > 0 else 0
-    avg_density_5 = total_density_5ghz / counter_5 if counter_5 > 0 else 0
+    avg_density_24 = meanDensity(data, "2.4")
+    avg_density_5 = meanDensity(data, "5")
 
 
     #jekiname to plotarisma
@@ -207,7 +191,7 @@ def visualizer(data):
 
     plt.figure(figsize=(14, 8))
     bars = plt.bar(labels, density_scores, color=colors, edgecolor=edge_colors, width=0.6)
-    plt.title("Average Density Score: 2.4GHz VS 5GHz", fontsize=16, fontweight="bold")
+    plt.title(f"Average Density Score: 2.4GHz VS 5GHz ({netname}", fontsize=16, fontweight="bold")
     plt.ylabel("Density Score", fontsize=14)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
@@ -222,16 +206,99 @@ def visualizer(data):
 
     plt.tight_layout()
     plt.show()
+    
+
+def compare_networks(NetData, NetName):
+
+    #meso density gia to ena wifi
+    avg1_24 = meanDensity(NetData[0], "2.4")
+    avg1_5 = meanDensity(NetData[0], "5")
+
+    #gia to allo
+    avg2_24 = meanDensity(NetData[1], "2.4")
+    avg2_5 = meanDensity(NetData[1], "5")
+
+    #synoliko meso density
+    total1 = (avg1_24 + avg1_5) / 2
+    total2 = (avg2_24 + avg2_5) / 2
+
+    #=====PLOT 1=======
+    #sygkrisi pyknotitas metaju toy kathe wifi
+
+    labels = [NetName[0], NetName[1]]
+    values = [total1, total2]
+    colors = ['teal', 'indigo']
+
+    plt.figure(figsize=(14, 6))
+    bars = plt.bar(labels, values, color=colors, width=0.5)
+    plt.title("Total Density for each Network", fontsize=14, fontweight="bold")
+    plt.ylabel("Total Mean Density", fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.6)
+
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, f'{height:.1f}', ha='center', fontsize=10, color='black')
+
+    plt.tight_layout()
+    plt.show()
 
 
+    #=====PLOT 2=======
+    #sygkrisi pyknotitas  ths kathe bandas gia kathe gouifi
+
+    labels = ['2.4GHz', '5 GHz']
+    x = range(len(labels))
+    width = 0.35
+
+    plt.figure(figsize=(14, 6))
+    plt.bar([i - width / 2 for i in x], [avg1_24, avg1_5], width=width, label=NetName[0], color='orangered')
+    plt.bar([i + width / 2 for i in x], [avg2_24, avg2_5], width=width, label=NetName[1], color='dodgerblue')
+
+    plt.title("Density of channels in each Network", fontsize=14, fontweight="bold")
+    plt.ylabel("Density of Channels", fontsize=12)
+    plt.xticks(x, labels)
+    plt.legend()
+    plt.grid(axis='y', linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+
+#utility function gia na paroume to meso oro tou desnsity ana banda (dry code opws leei kai o nikolis)
+def meanDensity(data, band):
+    total = 0
+    count = 0
+
+    for bssid in data.keys():
+        channel = data[bssid].get("channel")
+        if channel is not None:
+            if band == "2.4" and channel <= 13:
+                total += data[bssid]['density_score']
+                count += 1
+            elif band == "5" and channel > 13:
+                total += data[bssid]['density_score']
+                count += 1
+
+    return total / count if count > 0 else 0
+
+
+'''==========================================================================================================================================='''
 
 
 def main():
 
-    pcap_file = "TUC.pcapng"
-    print(f"Reading {pcap_file}")
-    data = analyze_ap_signal_strength(pcap_file)
-    visualizer(data)
+    pcap_file1 = "TUC.pcapng"
+    pcap_file2 = "MyHome.pcapng"
+
+    print(f"Reading {pcap_file1}")
+    data1 = analyze_ap_signal_strength("TUC.pcapng")
+
+    print(f"Reading {pcap_file2}")
+    data2 = analyze_ap_signal_strength("random.pcapng")
+
+    visualizer(data1, "TUC")
+    visualizer(data2, "MyHome")
+
+    compare_networks([data1, data2], ["TUC", "MyHome"])
+
 
 if __name__ == "__main__":
     main()

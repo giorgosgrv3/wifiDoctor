@@ -191,7 +191,7 @@ def visualizer(data, netname):
 
     plt.figure(figsize=(14, 8))
     bars = plt.bar(labels, density_scores, color=colors, edgecolor=edge_colors, width=0.6)
-    plt.title(f"Average Density Score: 2.4GHz VS 5GHz ({netname}", fontsize=16, fontweight="bold")
+    plt.title(f"Average Density Score: 2.4GHz VS 5GHz ({netname})", fontsize=16, fontweight="bold")
     plt.ylabel("Density Score", fontsize=14)
     plt.xticks(fontsize=12)
     plt.yticks(fontsize=12)
@@ -288,11 +288,15 @@ def main():
     pcap_file1 = "TUC.pcapng"
     pcap_file2 = "MyHome.pcapng"
 
+    print("*"*150)
     print(f"Reading {pcap_file1}")
-    data1 = analyze_ap_signal_strength("TUC.pcapng")
+    data1 = analyze_ap_signal_strength(pcap_file1)
+    print("*" * 150)
 
     print(f"Reading {pcap_file2}")
-    data2 = analyze_ap_signal_strength("random.pcapng")
+    data2 = analyze_ap_signal_strength(pcap_file2)
+    print("*"*150)
+
 
     visualizer(data1, "TUC")
     visualizer(data2, "MyHome")
